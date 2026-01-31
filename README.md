@@ -31,3 +31,6 @@ El proyecto sigue el patrón de diseño **MVVM (Model-View-ViewModel)**, garanti
 2. Ejecuta `flutter pub get` para instalar las dependencias.
 3. Asegúrate de configurar las constantes de la API en `lib/helpers/api_constants.dart`.
 4. Ejecuta el proyecto con `flutter run`.
+
+![Simulator Screen Recording - iPhone 17 Pro Max - 2026-01-31 at 00 02 42](https://github.com/user-attachments/assets/1c28e3bb-e45a-4537-a111-9864f38e0642)
+
