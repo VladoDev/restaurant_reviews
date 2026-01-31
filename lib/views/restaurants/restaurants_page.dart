@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:restaurants_reviews/models/restaurants_model.dart';
 import 'package:restaurants_reviews/viewmodels/restaurants_view_model.dart';
+import 'package:restaurants_reviews/views/restaurants/restaurant_detail_page.dart';
 import 'package:restaurants_reviews/views/widgets/add_restaurant_icon.dart';
 
 class RestaurantsPage extends StatefulWidget {
@@ -120,30 +122,33 @@ class _RestaurantsPageState extends State<RestaurantsPage> {
             horizontal: 16,
             vertical: 8,
           ),
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: CachedNetworkImage(
-              imageUrl: item.image,
-              width: 60,
-              height: 60,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
+          leading: Hero(
+            tag: item.slug,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: CachedNetworkImage(
+                imageUrl: item.image,
                 width: 60,
                 height: 60,
-                color: Colors.grey[200],
-                child: const Center(
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  width: 60,
+                  height: 60,
+                  color: Colors.grey[200],
+                  child: const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
                   ),
                 ),
-              ),
-              errorWidget: (context, url, error) => Container(
-                width: 60,
-                height: 60,
-                color: Colors.grey[300],
-                child: const Icon(Icons.restaurant, color: Colors.grey),
+                errorWidget: (context, url, error) => Container(
+                  width: 60,
+                  height: 60,
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.restaurant, color: Colors.grey),
+                ),
               ),
             ),
           ),
@@ -151,11 +156,27 @@ class _RestaurantsPageState extends State<RestaurantsPage> {
             item.name,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
-          subtitle: Text(
-            item.url.isEmpty ? "No URL available" : item.url,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: Colors.blueGrey, fontSize: 14),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.url.isEmpty ? "No URL available" : item.url,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.blueGrey, fontSize: 14),
+              ),
+              const SizedBox(height: 4),
+              item.rating == 0
+                  ? Text("No reviews", style: TextStyle(color: Colors.blueGrey))
+                  : RatingBarIndicator(
+                      rating: item.rating,
+                      itemBuilder: (context, index) =>
+                          const Icon(Icons.star, color: Colors.amber),
+                      itemCount: 5,
+                      itemSize: 18.0,
+                      direction: Axis.horizontal,
+                    ),
+            ],
           ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
@@ -168,12 +189,14 @@ class _RestaurantsPageState extends State<RestaurantsPage> {
                   );
                 },
               ),
-              IconButton(icon: Icon(Icons.arrow_forward_ios), onPressed: () {}),
+              IconButton(
+                icon: Icon(Icons.arrow_forward_ios),
+                onPressed: () {
+                  Get.toNamed('/details', arguments: item);
+                },
+              ),
             ],
           ),
-          onTap: () {
-            print("Selected: ${item.slug}");
-          },
         );
       },
     );
