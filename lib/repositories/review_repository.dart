@@ -46,4 +46,13 @@ class ReviewRepository {
       return false;
     }
   }
+
+  Future<bool> updateReview(String slug, Map<String, dynamic> data) async {
+    try {
+      final response = await provider.patchReview(reviewSlug: slug, data: data);
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
 }

@@ -74,4 +74,24 @@ class RestaurantsViewModel extends GetxController {
       update();
     }
   }
+
+  Future<void> editRestaurant({
+    required String slug,
+    required Map<String, dynamic> updatedData,
+  }) async {
+    _loading = true;
+    update();
+
+    final success = await repository.updateRestaurant(slug, updatedData);
+
+    if (success) {
+      await searchRestaurants("q");
+      Get.snackbar("Success!", "Restaurant updated successfully");
+    } else {
+      Get.snackbar("Error", "Could not update the restaurant information");
+    }
+
+    _loading = false;
+    update();
+  }
 }

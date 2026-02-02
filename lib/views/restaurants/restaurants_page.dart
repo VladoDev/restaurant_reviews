@@ -7,8 +7,8 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:restaurants_reviews/models/restaurants_model.dart';
 import 'package:restaurants_reviews/viewmodels/restaurants_view_model.dart';
-import 'package:restaurants_reviews/views/restaurants/restaurant_detail_page.dart';
 import 'package:restaurants_reviews/views/widgets/add_restaurant_icon.dart';
+import 'package:restaurants_reviews/views/widgets/restaurant_form_sheet.dart';
 
 class RestaurantsPage extends StatefulWidget {
   const RestaurantsPage({super.key});
@@ -19,21 +19,7 @@ class RestaurantsPage extends StatefulWidget {
 
 class _RestaurantsPageState extends State<RestaurantsPage> {
   String? _searchValue;
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _urlController = TextEditingController();
-  XFile? _pickedImage;
   final ImagePicker _picker = ImagePicker();
-
-  Future<void> _selectImage() async {
-    final XFile? selected = await _picker.pickImage(
-      source: ImageSource.gallery,
-    );
-    if (selected != null) {
-      setState(() {
-        _pickedImage = selected;
-      });
-    }
-  }
 
   @override
   void initState() {
@@ -88,15 +74,8 @@ class _RestaurantsPageState extends State<RestaurantsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Get.bottomSheet(
-            _buildAddRestaurantForm(),
-            backgroundColor: Colors.white,
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
+            const RestaurantFormSheet(),
+            isScrollControlled: true,
           );
         },
         child: AddRestaurantIcon(),
@@ -182,6 +161,15 @@ class _RestaurantsPageState extends State<RestaurantsPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               IconButton(
+                icon: Icon(Icons.edit),
+                onPressed: () async {
+                  Get.bottomSheet(
+                    RestaurantFormSheet(restaurant: item),
+                    isScrollControlled: true,
+                  );
+                },
+              ),
+              IconButton(
                 icon: Icon(Icons.delete, color: Colors.red),
                 onPressed: () async {
                   await Get.find<RestaurantsViewModel>().deleteRestaurant(
@@ -208,169 +196,6 @@ class _RestaurantsPageState extends State<RestaurantsPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [Text(message)],
       ),
-    );
-  }
-
-  Widget _buildAddRestaurantForm() {
-    return StatefulBuilder(
-      builder: (BuildContext context, StateSetter setSheetState) {
-        return Container(
-          padding: EdgeInsets.only(
-            top: 16,
-            left: 16,
-            right: 16,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-          ),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  "Add New Restaurant",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 20),
-
-                GestureDetector(
-                  onTap: () async {
-                    final XFile? selected = await _picker.pickImage(
-                      source: ImageSource.gallery,
-                      imageQuality: 80,
-                    );
-                    if (selected != null) {
-                      setSheetState(() {
-                        _pickedImage = selected;
-                      });
-                    }
-                  },
-                  child: Container(
-                    height: 150,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[300]!),
-                    ),
-                    child: _pickedImage == null
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.add_a_photo,
-                                size: 40,
-                                color: Colors.grey[400],
-                              ),
-                              const Text(
-                                "Tap to select photo",
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                            ],
-                          )
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.file(
-                              File(_pickedImage!.path),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: "Restaurant Name *",
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.restaurant),
-                  ),
-                ),
-                const SizedBox(height: 15),
-
-                TextFormField(
-                  controller: _urlController,
-                  keyboardType: TextInputType.url,
-                  decoration: const InputDecoration(
-                    labelText: "Website URL (Optional)",
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.link),
-                  ),
-                ),
-
-                const SizedBox(height: 25),
-
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 55),
-                    backgroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: () async {
-                    FocusScope.of(context).unfocus();
-                    final String name = _nameController.text.trim();
-                    final String url = _urlController.text.trim();
-                    if (_nameController.text.trim().isEmpty) {
-                      Get.snackbar("Error", "Name is required");
-                      return;
-                    }
-                    if (_pickedImage == null) {
-                      Get.snackbar("Error", "Please select an image");
-                      return;
-                    }
-
-                    if (url.isNotEmpty) {
-                      final urlRegExp = RegExp(
-                        r'^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$',
-                      );
-
-                      if (!urlRegExp.hasMatch(url)) {
-                        Get.snackbar(
-                          "Invalid URL",
-                          "Please insert a valid URL: (ex: https://google.com)",
-                        );
-                        return;
-                      }
-                    }
-
-                    await Get.find<RestaurantsViewModel>().saveRestaurant(
-                      name: name,
-                      url: url,
-                      imagePath: _pickedImage!.path,
-                    );
-
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    }
-
-                    _nameController.clear();
-                    _urlController.clear();
-                    Future.delayed(const Duration(milliseconds: 300), () {
-                      if (mounted) {
-                        setState(() => _pickedImage = null);
-                      }
-                    });
-                  },
-                  child: const Text(
-                    "SAVE RESTAURANT",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }

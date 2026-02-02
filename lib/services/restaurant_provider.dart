@@ -32,4 +32,17 @@ class RestaurantProvider {
   Future<Response> deleteRestaurant(String slug) async {
     return await _client.delete(ApiConstants.deleteRestaurant(slug));
   }
+
+  Future<Response> patchRestaurant({
+    required String slug,
+    required dynamic data,
+  }) async {
+    var response = await _client.patch(
+      "${ApiConstants.restaurants}$slug/",
+      data: data is Map
+          ? FormData.fromMap(Map<String, dynamic>.from(data))
+          : data,
+    );
+    return response;
+  }
 }

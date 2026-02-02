@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:restaurants_reviews/models/restaurants_model.dart';
 import 'package:restaurants_reviews/services/restaurant_provider.dart';
 
@@ -36,6 +37,25 @@ class RestaurantRepository {
     try {
       final response = await provider.deleteRestaurant(slug);
       return response.statusCode == 204;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> updateRestaurant(String slug, Map<String, dynamic> data) async {
+    try {
+      if (data.containsKey('image_path') && data['image_path'] != null) {
+        String path = data['image_path'];
+        data['image'] = await MultipartFile.fromFile(
+          path,
+          filename: path.split('/').last,
+        );
+        data.remove('image_path');
+      }
+
+      final response = await provider.patchRestaurant(slug: slug, data: data);
+
+      return response.statusCode == 200;
     } catch (e) {
       return false;
     }

@@ -6,6 +6,7 @@ import 'package:restaurants_reviews/models/restaurants_model.dart';
 import 'package:restaurants_reviews/models/review_model.dart';
 import 'package:restaurants_reviews/viewmodels/review_view_model.dart';
 import 'package:restaurants_reviews/views/widgets/add_review_icon.dart';
+import 'package:restaurants_reviews/views/widgets/review_form_sheet.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   const RestaurantDetailPage({super.key});
@@ -15,10 +16,6 @@ class RestaurantDetailPage extends StatefulWidget {
 }
 
 class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-  int _currentRating = 3;
-
   @override
   void initState() {
     super.initState();
@@ -35,7 +32,12 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
     return Scaffold(
       appBar: AppBar(title: Text(restaurant.name)),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddReviewSheet(restaurant.slug),
+        onPressed: () {
+          Get.bottomSheet(
+            ReviewFormSheet(restaurantSlug: restaurant.slug),
+            isScrollControlled: true,
+          );
+        },
         child: const AddReviewIcon(),
       ),
       body: GetBuilder<ReviewViewModel>(
@@ -190,9 +192,26 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
               ),
             ],
           ),
-          trailing: IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-            onPressed: () => _confirmDelete(review.slug, restaurant.slug),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  Get.bottomSheet(
+                    ReviewFormSheet(
+                      restaurantSlug: restaurant.slug,
+                      review: review,
+                    ),
+                    isScrollControlled: true,
+                  );
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete, color: Colors.redAccent),
+                onPressed: () => _confirmDelete(review.slug, restaurant.slug),
+              ),
+            ],
           ),
         ),
       ),
@@ -211,107 +230,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
         Get.find<ReviewViewModel>().deleteReview(reviewSlug);
         Get.back();
       },
-    );
-  }
-
-  void _showAddReviewSheet(String slug) {
-    Get.bottomSheet(
-      StatefulBuilder(
-        builder: (context, setSheetState) {
-          return Container(
-            padding: EdgeInsets.only(
-              top: 20,
-              left: 20,
-              right: 20,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-            ),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    "Add Review",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 15),
-                  RatingBar.builder(
-                    initialRating: _currentRating.toDouble(),
-                    minRating: 1,
-                    itemCount: 5,
-                    itemSize: 30,
-                    itemBuilder: (context, _) =>
-                        const Icon(Icons.star, color: Colors.amber),
-                    onRatingUpdate: (rating) => _currentRating = rating.toInt(),
-                  ),
-                  const SizedBox(height: 15),
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: "Name",
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: _descriptionController,
-                    maxLines: 3,
-                    decoration: const InputDecoration(
-                      labelText: "Review",
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 50),
-                      backgroundColor: Colors.black,
-                    ),
-                    onPressed: () async {
-                      final name = _nameController.text.trim();
-                      if (_nameController.text.isNotEmpty &&
-                          _descriptionController.text.isNotEmpty) {
-                        final bool alreadyReviewed = Get.find<ReviewViewModel>()
-                            .reviews
-                            .any(
-                              (r) => r.name.toLowerCase() == name.toLowerCase(),
-                            );
-
-                        if (alreadyReviewed) {
-                          Get.snackbar(
-                            "Action Denied",
-                            "Only one review is allowed per person",
-                          );
-                          return;
-                        }
-                        await Get.find<ReviewViewModel>().addReview(
-                          restaurantSlug: slug,
-                          name: _nameController.text,
-                          description: _descriptionController.text,
-                          rating: _currentRating,
-                        );
-                        _nameController.clear();
-                        _descriptionController.clear();
-                        if (Navigator.canPop(context)) {
-                          Navigator.pop(context);
-                        }
-                      }
-                    },
-                    child: const Text(
-                      "SUBMIT",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-      isScrollControlled: true,
     );
   }
 }

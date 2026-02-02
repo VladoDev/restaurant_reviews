@@ -59,4 +59,34 @@ class ReviewViewModel extends GetxController {
     loading = false;
     update();
   }
+
+  Future<void> updateReview({
+    required String reviewSlug,
+    required String restaurantSlug,
+    required String name,
+    required String description,
+    required int rating,
+  }) async {
+    loading = true;
+    update();
+
+    final Map<String, dynamic> data = {
+      "restaurant": restaurantSlug,
+      "name": name,
+      "description": description,
+      "rating": rating,
+    };
+
+    final success = await repository.updateReview(reviewSlug, data);
+
+    if (success) {
+      await loadReviews(restaurantSlug);
+      Get.snackbar("Success!", "Review updated successfully");
+    } else {
+      Get.snackbar("Error", "Could not update the review");
+    }
+
+    loading = false;
+    update();
+  }
 }

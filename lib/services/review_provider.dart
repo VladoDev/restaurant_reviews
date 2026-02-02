@@ -31,4 +31,14 @@ class ReviewProvider {
   Future<Response> deleteReview(String slug) async {
     return await _client.delete("${ApiConstants.review}$slug/");
   }
+
+  Future<Response> patchReview({
+    required String reviewSlug,
+    required Map<String, dynamic> data,
+  }) async {
+    return await _client.patch(
+      "${ApiConstants.review}$reviewSlug/",
+      data: data,
+    );
+  }
 }
