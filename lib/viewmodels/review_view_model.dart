@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:restaurants_reviews/models/review_model.dart';
 import 'package:restaurants_reviews/repositories/review_repository.dart';
@@ -34,9 +35,19 @@ class ReviewViewModel extends GetxController {
 
     if (success) {
       await loadReviews(restaurantSlug);
-      Get.snackbar("Success", "Review added successfully");
+      Get.snackbar(
+        "Success",
+        "Review added successfully",
+        borderColor: Colors.green,
+        borderWidth: 2,
+      );
     } else {
-      Get.snackbar("Error", "Failed to add review");
+      Get.snackbar(
+        "Error",
+        "Only one review allowed per person",
+        borderColor: Colors.red,
+        borderWidth: 2,
+      );
     }
 
     loading = false;
@@ -51,9 +62,19 @@ class ReviewViewModel extends GetxController {
 
     if (success) {
       reviews.removeWhere((item) => item.slug == reviewSlug);
-      Get.snackbar("Deleted", "Review removed successfully");
+      Get.snackbar(
+        "Deleted",
+        "Review removed successfully",
+        borderColor: Colors.green,
+        borderWidth: 2,
+      );
     } else {
-      Get.snackbar("Error", "Failed to delete review");
+      Get.snackbar(
+        "Error",
+        "Failed to delete review",
+        borderColor: Colors.red,
+        borderWidth: 2,
+      );
     }
 
     loading = false;
@@ -81,9 +102,19 @@ class ReviewViewModel extends GetxController {
 
     if (success) {
       await loadReviews(restaurantSlug);
-      Get.snackbar("Success!", "Review updated successfully");
+      Get.snackbar(
+        "Success!",
+        "Review updated successfully",
+        borderColor: Colors.green,
+        borderWidth: 2,
+      );
     } else {
-      Get.snackbar("Error", "Could not update the review");
+      Get.snackbar(
+        "Error",
+        "Could not update the review",
+        borderColor: Colors.red,
+        borderWidth: 2,
+      );
     }
 
     loading = false;

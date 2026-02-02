@@ -119,7 +119,12 @@ class _ReviewFormSheetState extends State<ReviewFormSheet> {
     final description = _descriptionController.text.trim();
 
     if (name.isEmpty || description.isEmpty) {
-      Get.snackbar("Error", "All fields are required");
+      Get.snackbar(
+        "Error",
+        "All fields are required",
+        borderColor: Colors.red,
+        borderWidth: 2,
+      );
       return;
     }
 
@@ -129,7 +134,12 @@ class _ReviewFormSheetState extends State<ReviewFormSheet> {
       );
 
       if (alreadyReviewed) {
-        Get.snackbar("Action Denied", "Only one review is allowed per person");
+        Get.snackbar(
+          "Error",
+          "Only one review is allowed per person",
+          borderColor: Colors.red,
+          borderWidth: 2,
+        );
         return;
       }
 

@@ -147,7 +147,12 @@ class _RestaurantFormSheetState extends State<RestaurantFormSheet> {
     final url = _urlController.text.trim();
 
     if (name.isEmpty) {
-      Get.snackbar("Error", "Name is required");
+      Get.snackbar(
+        "Error",
+        "Name is required",
+        borderColor: Colors.red,
+        borderWidth: 2,
+      );
       return;
     }
 
@@ -170,7 +175,12 @@ class _RestaurantFormSheetState extends State<RestaurantFormSheet> {
       );
     } else {
       if (_pickedImage == null) {
-        Get.snackbar("Error", "Please select an image");
+        Get.snackbar(
+          "Error",
+          "Please select an image",
+          borderColor: Colors.red,
+          borderWidth: 2,
+        );
         return;
       }
       await Get.find<RestaurantsViewModel>().saveRestaurant(

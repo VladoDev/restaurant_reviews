@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:restaurants_reviews/models/restaurants_model.dart';
 import 'package:restaurants_reviews/viewmodels/restaurants_view_model.dart';
 import 'package:restaurants_reviews/views/widgets/add_restaurant_icon.dart';
@@ -17,7 +16,6 @@ class RestaurantsPage extends StatefulWidget {
 
 class _RestaurantsPageState extends State<RestaurantsPage> {
   final ScrollController _scrollController = ScrollController();
-  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {

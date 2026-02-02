@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:restaurants_reviews/models/restaurants_model.dart';
 import 'package:restaurants_reviews/repositories/restaurant_repository.dart';
@@ -44,7 +45,12 @@ class RestaurantsViewModel extends GetxController {
         _hasMore = false;
       }
     } catch (e) {
-      Get.snackbar("Error", "Could not fetch restaurants");
+      Get.snackbar(
+        "Error",
+        "Could not fetch restaurants",
+        borderColor: Colors.red,
+        borderWidth: 2,
+      );
     } finally {
       _loading = false;
       update();
@@ -70,7 +76,12 @@ class RestaurantsViewModel extends GetxController {
 
       _restaurants.addAll(data);
     } catch (e) {
-      Get.snackbar("Error", "Could not load more restaurants");
+      Get.snackbar(
+        "Error",
+        "Could not load more restaurants",
+        borderColor: Colors.red,
+        borderWidth: 2,
+      );
     } finally {
       _loadingMore = false;
       update();
@@ -93,9 +104,19 @@ class RestaurantsViewModel extends GetxController {
       );
 
       await fetchInitialRestaurants();
-      Get.snackbar("Saved!", "Restaurant successfully saved!");
+      Get.snackbar(
+        "Saved!",
+        "Restaurant successfully saved!",
+        borderColor: Colors.green,
+        borderWidth: 2,
+      );
     } catch (e) {
-      Get.snackbar("Error", "An error has occurred.");
+      Get.snackbar(
+        "Error",
+        "An error has occurred.",
+        borderColor: Colors.red,
+        borderWidth: 2,
+      );
     } finally {
       _loading = false;
       update();
@@ -110,10 +131,20 @@ class RestaurantsViewModel extends GetxController {
       bool success = await repository.removeRestaurant(slug);
       if (success) {
         _restaurants.removeWhere((item) => item.slug == slug);
-        Get.snackbar("Success!", "Restaurant removed.");
+        Get.snackbar(
+          "Success!",
+          "Restaurant removed.",
+          borderColor: Colors.green,
+          borderWidth: 2,
+        );
       }
     } catch (e) {
-      Get.snackbar("Error", "Failed to delete restaurant");
+      Get.snackbar(
+        "Error",
+        "Failed to delete restaurant",
+        borderColor: Colors.red,
+        borderWidth: 2,
+      );
     } finally {
       _loading = false;
       update();
@@ -132,12 +163,27 @@ class RestaurantsViewModel extends GetxController {
 
       if (success) {
         await fetchInitialRestaurants();
-        Get.snackbar("Success!", "Restaurant updated successfully");
+        Get.snackbar(
+          "Success!",
+          "Restaurant updated successfully",
+          borderColor: Colors.green,
+          borderWidth: 2,
+        );
       } else {
-        Get.snackbar("Error", "Could not update the restaurant information");
+        Get.snackbar(
+          "Error",
+          "Could not update the restaurant information",
+          borderColor: Colors.red,
+          borderWidth: 2,
+        );
       }
     } catch (e) {
-      Get.snackbar("Error", "An error occurred during update");
+      Get.snackbar(
+        "Error",
+        "An error occurred during update",
+        borderColor: Colors.red,
+        borderWidth: 2,
+      );
     } finally {
       _loading = false;
       update();
