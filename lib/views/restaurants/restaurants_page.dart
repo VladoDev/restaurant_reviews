@@ -97,7 +97,7 @@ class _RestaurantsPageState extends State<RestaurantsPage> {
             fit: BoxFit.cover,
             placeholder: (context, url) => Container(
               width: 60,
-              heightgit: 60,
+              height: 60,
               color: Colors.grey[200],
               child: const Center(
                 child: SizedBox(
