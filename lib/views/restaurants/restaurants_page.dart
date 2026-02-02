@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -99,7 +97,7 @@ class _RestaurantsPageState extends State<RestaurantsPage> {
             fit: BoxFit.cover,
             placeholder: (context, url) => Container(
               width: 60,
-              height: 60,
+              heightgit: 60,
               color: Colors.grey[200],
               child: const Center(
                 child: SizedBox(
