@@ -8,29 +8,71 @@ class RestaurantsViewModel extends GetxController {
   RestaurantsViewModel(this.repository);
 
   List<RestaurantModel> _restaurants = [];
+  bool _loading = false;
+  bool _loadingMore = false;
+  int _offset = 0;
+  final int _limit = 10;
+  bool _hasMore = true;
 
   List<RestaurantModel> get restaurants => _restaurants;
-
-  bool _loading = false;
-
   bool get loading => _loading;
+  bool get loadingMore => _loadingMore;
+  bool get hasMore => _hasMore;
 
-  Future<void> searchRestaurants(String query) async {
-    if (query.isEmpty) {
-      _restaurants = [];
-      update();
-      return;
-    }
+  @override
+  void onInit() {
+    super.onInit();
+    fetchInitialRestaurants();
+  }
 
+  Future<void> fetchInitialRestaurants() async {
     try {
       _loading = true;
+      _offset = 0;
+      _hasMore = true;
+      _restaurants = [];
       update();
 
-      _restaurants = await repository.searchRestaurants(query);
+      final List<RestaurantModel> data = await repository.getRestaurants(
+        _limit,
+        _offset,
+      );
+
+      _restaurants = data;
+
+      if (data.length < _limit) {
+        _hasMore = false;
+      }
     } catch (e) {
       Get.snackbar("Error", "Could not fetch restaurants");
     } finally {
       _loading = false;
+      update();
+    }
+  }
+
+  Future<void> fetchMoreRestaurants() async {
+    if (_loadingMore || !_hasMore) return;
+
+    try {
+      _loadingMore = true;
+      update();
+
+      _offset += _limit;
+      final List<RestaurantModel> data = await repository.getRestaurants(
+        _limit,
+        _offset,
+      );
+
+      if (data.isEmpty || data.length < _limit) {
+        _hasMore = false;
+      }
+
+      _restaurants.addAll(data);
+    } catch (e) {
+      Get.snackbar("Error", "Could not load more restaurants");
+    } finally {
+      _loadingMore = false;
       update();
     }
   }
@@ -42,15 +84,18 @@ class RestaurantsViewModel extends GetxController {
   }) async {
     try {
       _loading = true;
+      update();
+
       await repository.createRestaurant(
         name: name,
         url: url,
         imagePath: imagePath,
       );
-      await searchRestaurants(name);
-      Get.snackbar("Saved!", "Restaurant succesfuly saved!");
+
+      await fetchInitialRestaurants();
+      Get.snackbar("Saved!", "Restaurant successfully saved!");
     } catch (e) {
-      Get.snackbar("Error", "An error has ocurred.");
+      Get.snackbar("Error", "An error has occurred.");
     } finally {
       _loading = false;
       update();
@@ -61,10 +106,10 @@ class RestaurantsViewModel extends GetxController {
     try {
       _loading = true;
       update();
+
       bool success = await repository.removeRestaurant(slug);
       if (success) {
-        restaurants.removeWhere((item) => item.slug == slug);
-        update();
+        _restaurants.removeWhere((item) => item.slug == slug);
         Get.snackbar("Success!", "Restaurant removed.");
       }
     } catch (e) {
@@ -79,19 +124,23 @@ class RestaurantsViewModel extends GetxController {
     required String slug,
     required Map<String, dynamic> updatedData,
   }) async {
-    _loading = true;
-    update();
+    try {
+      _loading = true;
+      update();
 
-    final success = await repository.updateRestaurant(slug, updatedData);
+      final success = await repository.updateRestaurant(slug, updatedData);
 
-    if (success) {
-      await searchRestaurants("q");
-      Get.snackbar("Success!", "Restaurant updated successfully");
-    } else {
-      Get.snackbar("Error", "Could not update the restaurant information");
+      if (success) {
+        await fetchInitialRestaurants();
+        Get.snackbar("Success!", "Restaurant updated successfully");
+      } else {
+        Get.snackbar("Error", "Could not update the restaurant information");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "An error occurred during update");
+    } finally {
+      _loading = false;
+      update();
     }
-
-    _loading = false;
-    update();
   }
 }

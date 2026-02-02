@@ -7,8 +7,11 @@ class RestaurantRepository {
 
   RestaurantRepository(this.provider);
 
-  Future<List<RestaurantModel>> searchRestaurants(String query) async {
-    final response = await provider.getRestaurants(query);
+  Future<List<RestaurantModel>> getRestaurants(int limit, int offset) async {
+    final response = await provider.getRestaurants(
+      limit: limit,
+      offset: offset,
+    );
 
     final List data = response.data['results'];
 

@@ -81,18 +81,32 @@ class _ReviewFormSheetState extends State<ReviewFormSheet> {
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-                backgroundColor: Colors.black,
-              ),
-              onPressed: _handleSubmit,
-              child: controller.loading
-                  ? CircularProgressIndicator()
-                  : Text(
-                      isEditing ? "UPDATE" : "SUBMIT",
-                      style: const TextStyle(color: Colors.white),
-                    ),
+            GetBuilder<ReviewViewModel>(
+              builder: (vm) {
+                return ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 50),
+                    backgroundColor: Colors.black,
+                  ),
+                  onPressed: vm.loading ? null : _handleSubmit,
+                  child: vm.loading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          isEditing ? "UPDATE" : "SUBMIT",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                );
+              },
             ),
           ],
         ),

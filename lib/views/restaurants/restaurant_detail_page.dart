@@ -100,6 +100,8 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 top: Radius.circular(15),
               ),
               child: CachedNetworkImage(
+                key: ValueKey(restaurant.slug),
+                cacheKey: restaurant.slug,
                 imageUrl: restaurant.image,
                 height: 200,
                 width: double.infinity,

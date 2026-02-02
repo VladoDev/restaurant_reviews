@@ -77,21 +77,32 @@ class _RestaurantFormSheetState extends State<RestaurantFormSheet> {
               ),
             ),
             const SizedBox(height: 25),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 55),
-                backgroundColor: Colors.black,
-              ),
-              onPressed: _handleSave,
-              child: controller.loading
-                  ? CircularProgressIndicator()
-                  : Text(
-                      isEditing ? "UPDATE RESTAURANT" : "SAVE RESTAURANT",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+            GetBuilder<RestaurantsViewModel>(
+              builder: (controller) {
+                return ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 55),
+                    backgroundColor: Colors.black,
+                  ),
+                  onPressed: controller.loading ? null : _handleSave,
+                  child: controller.loading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          isEditing ? "UPDATE RESTAURANT" : "SAVE RESTAURANT",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                );
+              },
             ),
           ],
         ),

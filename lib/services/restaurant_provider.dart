@@ -5,10 +5,10 @@ import 'package:restaurants_reviews/services/base_client.dart';
 class RestaurantProvider {
   final Dio _client = BaseClient.dio;
 
-  Future<Response> getRestaurants(String query) async {
+  Future<Response> getRestaurants({int limit = 10, int offset = 0}) async {
     return await _client.get(
       ApiConstants.restaurants,
-      queryParameters: {'search': query},
+      queryParameters: {'limit': limit, 'offset': offset},
     );
   }
 
